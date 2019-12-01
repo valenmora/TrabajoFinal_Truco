@@ -1,0 +1,304 @@
+import random
+
+class Mazo_truco():
+
+  def __init__(self):
+    self.numeros = (1,2,3,4,5,6,7,10,11,12)
+    self.palos = ("\u2744","\u00A9","\u271f","\u0283")
+    self.baraja_truco = []
+
+    for i in self.numeros:
+      for j in self.palos:
+        carta = (i,j)
+        self.baraja_truco.append(carta)
+
+
+  def mostrar_baraja(self):
+    print(self.baraja_truco)
+    return None
+
+  def mezclar(self):
+    baraja_mezclada = []
+
+    for i in range(39):
+
+      carta_mezclada = random.choice(self.baraja_truco)
+
+      carta_sacada = self.baraja_truco.pop(self.baraja_truco.index(carta_mezclada))
+
+      baraja_mezclada.append(carta_sacada)
+
+    return baraja_mezclada
+
+
+class Tablero():
+  def __init__(self):
+    self.puntos_jugador1 = 0
+    self.puntos_CPU = 0
+
+  def sumar_y_mostrar_tablero(self,puntos_jug1,ptos_CPU):
+    self.puntos_jugador1 += puntos_jug1
+    self.puntos_CPU += ptos_CPU
+    print("\nTABLERO")
+    print("------------------------------------")
+    print("|   Jugador 1","\t|","\tComputadora     |")
+    print("\t\t",self.puntos_jugador1,"\t\t\t\t",self.puntos_CPU,"\t\t")
+    print("------------------------------------\n")
+    return self.puntos_jugador1,self.puntos_CPU
+
+
+class Jugada():
+
+  
+
+
+  def __init__(self):
+    self.jugador1 = "Jugador 1"
+    self.CPU = "Computadora"
+    self.cartas_jugador1 = []
+    self.cartas_CPU = []
+    self.cantos = {0: "no cantó",1:"Envido",2:"Quiero",3:"No quiero"}
+    self.mi_tablero = Tablero()
+    self.puntos_jugador1, self.puntos_compu = mi_tablero.puntos_jugador1, mi_tablero.puntos_CPU
+
+  def repartir(self, baraja):
+    self.cartas_jugador1 = []
+    self.cartas_CPU = []
+
+    self.cartas_jugador1.extend([baraja.pop(),baraja.pop(), baraja.pop()])
+
+    self.cartas_CPU.extend([baraja.pop(),baraja.pop(), baraja.pop()])
+
+    return self.cartas_jugador1, self.cartas_CPU
+  
+  #canta jugador
+  def cantar(self):
+    respuesta_jugador1 = 0
+    print("\n°°°°°°°°°°°°°°°°°JUGADA°°°°°°°°°°°°°°°°°°")
+    print("\n",self.jugador1.center(25,"="))
+    print("Cartas:\n",self.cartas_jugador1)
+    envido_jugador1 = self.contar_puntos_envido(self.cartas_jugador1)
+    print("  Tiene",envido_jugador1,"para el envido\n")
+    valor_cantado_jugador1 = int(input("Desea cantar? 0)No cantar 1)Envido: "))
+    
+    
+    #jugador No canta, pasa a CPU
+    if (valor_cantado_jugador1 == 0):
+      print("\n", self.CPU.center(25,"="))
+      respuesta_jugador1 = self.cantos[0]
+      print("El jugador " + respuesta_jugador1)
+      self.responder(0)
+    
+    #jugador canta Envido, para a CPU
+    elif (valor_cantado_jugador1 == 1):
+      print("\n", self.CPU.center(25,"="))
+      respuesta_jugador1 = self.cantos[1]
+      print("El jugador cantó " + respuesta_jugador1)
+      self.responder(1)
+    
+    #error de ingreso
+    else:
+      print("Debe elegir una opción válida: 1 ó 2")
+      self.cantar()
+
+    return respuesta_jugador1
+
+  #CPU elige respuesta al azar 
+  def responder(self, respuesta):
+    respuesta_CPU = 0
+    envido_jugador1 = self.contar_puntos_envido(self.cartas_jugador1)
+    envido_CPU = self.contar_puntos_envido(self.cartas_CPU)
+    
+    # si jugador No cantó, CPU elige al azar entre No cantar o cantar Envido
+    if(respuesta == 0):
+      valor_cantado_CPU = int(random.randint(0, 1))
+      
+      #Caso A - si CPU elige no cantar
+      if(valor_cantado_CPU == 0):
+        respuesta_CPU = self.cantos[0]
+        print("\n",self.jugador1.center(25,"="))
+        print("La computadora " + respuesta_CPU)
+        self.mi_tablero.sumar_y_mostrar_tablero(0,0)
+
+      #si CPU canta Envido pasa a jugador 1 (Casos B y C)
+      else:
+        respuesta_CPU = self.cantos[1]
+        print("\n",self.jugador1.center(25,"="))
+        print("La computadora cantó " + respuesta_CPU)
+        self.responder_final(valor_cantado_CPU)
+    
+    # si jugador cantó Envido, CPU elige al azar entre Envido, Quiero y No quiero
+    elif(respuesta == 1):
+      valor_cantado_CPU = int(random.randint(2, 4))
+      
+      #si CPU eligió Envido, pasa a jugador 1 (casos F y G)
+      if (valor_cantado_CPU == 2):
+        respuesta_CPU = self.cantos[1]
+        print("\n",self.jugador1.center(25,"="))
+        print("La computadora responde " + respuesta_CPU)
+        self.responder_final(2)
+      
+      #CASO D - si CPU eligió No quiero, pasa puntos a Tablero según ganador
+      elif (valor_cantado_CPU == 3):
+        respuesta_CPU = self.cantos[3]
+        print("\nLa computadora responde " + respuesta_CPU)
+        self.mi_tablero.sumar_y_mostrar_tablero(1,0)
+        print(" Las cartas de la computadora eran:\n",self.cartas_CPU)
+        print("  Tenía",envido_CPU,"para el envido\n")
+
+
+      #CASO E - si CPU eligió Quiero, pasa puntos a Tablero según ganador
+      elif (valor_cantado_CPU == 4):
+        respuesta_CPU = self.cantos[2]
+        print("\nLa computadora responde " + respuesta_CPU)
+        if(envido_jugador1>envido_CPU):
+          self.mi_tablero.sumar_y_mostrar_tablero(2,0)
+        elif(envido_jugador1 < envido_CPU):
+          self.mi_tablero.sumar_y_mostrar_tablero(0,2)
+        else:
+          self.mi_tablero.sumar_y_mostrar_tablero(0,0)
+        print(" Las cartas de la computadora eran:\n",self.cartas_CPU)
+        print("  Tenía",envido_CPU,"para el envido\n")
+
+      #error de ingreso
+      else:
+        print("Debe elegir una opción válida: 1, 2 ó 3")
+        self.responder(respuesta)
+    
+    while ((self.mi_tablero.puntos_jugador1<15) and ( self.mi_tablero.puntos_CPU<15)):
+      mi_mazo = Mazo_truco()
+      baraja = mi_mazo.mezclar()
+      self.repartir(baraja)
+      self.cantar()
+
+    return respuesta_CPU
+  
+  #Respuesta final de CPU o de jugador1 según se hayan dado las alternativas de jugadas
+  def responder_final(self,eleccion):
+    respuesta_final = 0
+    envido_jugador1 = self.contar_puntos_envido(self.cartas_jugador1)
+    envido_CPU = self.contar_puntos_envido(self.cartas_CPU)
+    
+
+    #si jugador no cantó y CPU eligió Envido
+    if (eleccion == 1):
+      jugador_responde = int(input("Que desea contestar? 1)No Quiero 2)Quiero: "))
+
+      #Caso B - jugador responde No Quiero
+      if (jugador_responde == 1):
+        self.mi_tablero.sumar_y_mostrar_tablero(0,1)
+
+      #Caso C - jugador responde Quiero
+      else:
+        if(envido_jugador1>envido_CPU):
+          self.mi_tablero.sumar_y_mostrar_tablero(2,0)
+        elif(envido_jugador1 < envido_CPU):
+          self.mi_tablero.sumar_y_mostrar_tablero(0,2)
+        else:
+          self.mi_tablero.sumar_y_mostrar_tablero(0,0)
+
+    #si jugador cantó Envido y CPU también cantó Envido
+    else:  
+      jugador_responde = int(input("Que desea contestar? 1)No quiero 2)Quiero: "))
+      
+      #CASO F -  jugador responde No Quiero
+      if (jugador_responde == 1):
+        self.mi_tablero.sumar_y_mostrar_tablero(0,2)
+      
+      #CASO G - jugador responde Quiero
+      elif (jugador_responde == 2):
+        respuesta_final = self.cantos[2]
+        if(envido_jugador1>envido_CPU):
+          self.mi_tablero.sumar_y_mostrar_tablero(3,0)
+        elif(envido_jugador1 < envido_CPU):
+          self.mi_tablero.sumar_y_mostrar_tablero(0,3)
+        else:
+          self.mi_tablero.sumar_y_mostrar_tablero(0,0)
+
+      #error de ingreso
+      else:
+        print("Debe elegir una opción válida: 1 ó 2")
+        self.responder_final(eleccion)
+    
+    print(" Las cartas de la computadora eran:\n",self.cartas_CPU)
+    print("  Tenía",envido_CPU,"para el envido\n")
+    while ((self.mi_tablero.puntos_jugador1<15) and ( self.mi_tablero.puntos_CPU<15)):
+      self.cantar()
+    
+    return respuesta_final
+
+  def contar_puntos_envido(self,cartas_jugador):
+    self.valor_jugador = []
+    self.puntos_jugador = 0
+    
+    for i in cartas_jugador:
+      if (i[0] == 10 or i[0] == 11 or i[0] == 12):
+        self.valor_jugador.append(0)
+      else:
+        self.valor_jugador.append(i[0])
+
+    suma_cartas_1_y_2, suma_cartas_1_y_3, suma_cartas_2_y_3 = 0, 0, 0
+
+    if(cartas_jugador[0][1] == cartas_jugador[1][1]):
+      self.puntos_jugador = 20 + self.valor_jugador[0] + self.valor_jugador[1]
+      suma_cartas_1_y_2 = self.puntos_jugador
+
+    if(cartas_jugador[0][1] == cartas_jugador[2][1] ):
+      self.puntos_jugador = 20 + self.valor_jugador[0] +  self.valor_jugador[2]
+      suma_cartas_1_y_3 = self.puntos_jugador
+
+    if(cartas_jugador[1][1] == cartas_jugador[2][1]):
+      self.puntos_jugador = 20 + self.valor_jugador[1] + self.valor_jugador[2]
+      suma_cartas_2_y_3 = self.puntos_jugador
+
+    if ((suma_cartas_1_y_2 >= suma_cartas_1_y_3) or (suma_cartas_1_y_2 >= suma_cartas_2_y_3)):
+      self.puntos_jugador = suma_cartas_1_y_2
+    if ((suma_cartas_1_y_3 >= suma_cartas_1_y_2) or (suma_cartas_1_y_3 >= suma_cartas_2_y_3)):  
+      if suma_cartas_1_y_3 > suma_cartas_1_y_2:
+        self.puntos_jugador = suma_cartas_1_y_3
+    if ((suma_cartas_2_y_3 >= suma_cartas_1_y_2) or (suma_cartas_2_y_3 >= suma_cartas_1_y_3)):
+      if suma_cartas_2_y_3 > suma_cartas_1_y_2 and suma_cartas_2_y_3 > suma_cartas_1_y_3:
+        self.puntos_jugador = suma_cartas_2_y_3
+
+  
+    return self.puntos_jugador
+
+  def ganador_final(self):
+    if (self.mi_tablero.puntos_jugador1>=15):
+      print("El JUGADOR 1 es el GANADOR")
+    elif(self.mi_tablero.puntos_CPU>=15):
+      print("La COMPUTADORA es la GANADORA")
+  
+  
+def explicaciones():
+  print("Jugadas posibles y Puntaje:") 
+  print("Jugada \tJugador 1 \t\tComputadora \tJugador1 \tPuntos Ganador")
+  print("A \t\tNo canta \t\tNo canta \t\t----- \t\t0")
+  print("B \t\tNo canta \t\tEnvido \t\t\tNo Quiero \t1")
+  print("C \t\tNo canta \t\tEnvido \t\t\tQuiero \t\t2")
+  print("D \t\tEnvido \t\t\tNo quiero \t\t----- \t\t1")
+  print("E \t\tEnvido \t\t\tQuiero \t\t\t----- \t\t2")
+  print("F \t\tEnvido \t\t\tEnvido \t\t\tNo quiero \t2")
+  print("G \t\tEnvido \t\t\tEnvido \t\t\tQuiero \t\t3")  
+  print("\nEmpate vale 0 en todos los casos")
+  
+  print("\nPalos:")
+  print("Oro: \u2744 , Copa: \u00A9 , Espada: \u271f , Basto: \u0283")
+  return None
+  
+
+#PROGRAMA PRINCIPAL
+explicaciones()
+
+print("\n\n******************************COMIENZA EL PARTIDO***************************")
+mi_mazo = Mazo_truco()
+mi_tablero = Tablero()
+mi_tablero.sumar_y_mostrar_tablero(0,0)
+baraja = mi_mazo.mezclar()
+jugada = Jugada()
+jugada.repartir(baraja)
+jugada.cantar()
+jugada.ganador_final()
+
+
+
