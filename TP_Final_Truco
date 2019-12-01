@@ -12,10 +12,9 @@ class Mazo_truco():
         carta = (i,j)
         self.baraja_truco.append(carta)
 
-
-  def mostrar_baraja(self):
+  ''' def mostrar_baraja(self):
     print(self.baraja_truco)
-    return None
+    return None'''
 
   def mezclar(self):
     baraja_mezclada = []
@@ -29,7 +28,6 @@ class Mazo_truco():
       baraja_mezclada.append(carta_sacada)
 
     return baraja_mezclada
-
 
 class Tablero():
   def __init__(self):
@@ -48,9 +46,6 @@ class Tablero():
 
 
 class Jugada():
-
-  
-
 
   def __init__(self):
     self.jugador1 = "Jugador 1"
@@ -80,7 +75,6 @@ class Jugada():
     envido_jugador1 = self.contar_puntos_envido(self.cartas_jugador1)
     print("  Tiene",envido_jugador1,"para el envido\n")
     valor_cantado_jugador1 = int(input("Desea cantar? 0)No cantar 1)Envido: "))
-    
     
     #jugador No canta, pasa a CPU
     if (valor_cantado_jugador1 == 0):
@@ -178,7 +172,6 @@ class Jugada():
     respuesta_final = 0
     envido_jugador1 = self.contar_puntos_envido(self.cartas_jugador1)
     envido_CPU = self.contar_puntos_envido(self.cartas_CPU)
-    
 
     #si jugador no cantó y CPU eligió Envido
     if (eleccion == 1):
@@ -260,7 +253,6 @@ class Jugada():
       if suma_cartas_2_y_3 > suma_cartas_1_y_2 and suma_cartas_2_y_3 > suma_cartas_1_y_3:
         self.puntos_jugador = suma_cartas_2_y_3
 
-  
     return self.puntos_jugador
 
   def ganador_final(self):
@@ -269,9 +261,8 @@ class Jugada():
     elif(self.mi_tablero.puntos_CPU>=15):
       print("La COMPUTADORA es la GANADORA")
   
-  
 def explicaciones():
-  print("Jugadas posibles y Puntaje:") 
+  print("\n******************* Jugadas posibles y Puntaje *******************\n")
   print("Jugada \tJugador 1 \t\tComputadora \tJugador1 \tPuntos Ganador")
   print("A \t\tNo canta \t\tNo canta \t\t----- \t\t0")
   print("B \t\tNo canta \t\tEnvido \t\t\tNo Quiero \t1")
@@ -282,15 +273,17 @@ def explicaciones():
   print("G \t\tEnvido \t\t\tEnvido \t\t\tQuiero \t\t3")  
   print("\nEmpate vale 0 en todos los casos")
   
-  print("\nPalos:")
-  print("Oro: \u2744 , Copa: \u00A9 , Espada: \u271f , Basto: \u0283")
-  return None
-  
+
+  print("\nPALOS")
+  print("-----------------------------------------------------------------")
+  print("|   Oro: \u2744    |","   Copa: \u00A9   |","   Espada: \u271f \t|","   Basto: \u0283   |")
+  print("-----------------------------------------------------------------")
+
 
 #PROGRAMA PRINCIPAL
 explicaciones()
 
-print("\n\n******************************COMIENZA EL PARTIDO***************************")
+print("\n\n************************* COMIENZA EL PARTIDO *************************")
 mi_mazo = Mazo_truco()
 mi_tablero = Tablero()
 mi_tablero.sumar_y_mostrar_tablero(0,0)
