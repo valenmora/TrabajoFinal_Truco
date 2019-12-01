@@ -215,7 +215,11 @@ class Jugada():
     
     print(" Las cartas de la computadora eran:\n",self.cartas_CPU)
     print("  Tenía",envido_CPU,"para el envido\n")
+    
     while ((self.mi_tablero.puntos_jugador1<15) and ( self.mi_tablero.puntos_CPU<15)):
+      mi_mazo = Mazo_truco()
+      baraja = mi_mazo.mezclar()
+      self.repartir(baraja)
       self.cantar()
     
     return respuesta_final
